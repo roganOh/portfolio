@@ -19,6 +19,8 @@ brew install graphviz
 python3 -m pip install pygraphviz pydot
 python3 -m pip install lxml
 python3 -m pip install catkin_pkg empy lark-parser pyparsing pyyaml setuptools argcomplete
+python3 -m pip install lark
+python3 -m pip install lark_parser
 ```
 ## 3. disable system integrity protection(SIP)
 ```
@@ -109,7 +111,21 @@ ln -s -f /usr/local/bin/python{version whcih you did remember}  /usr/local/bin/p
 ```
 source ~/venvs/{your venv name}/bin/activate
 ```
+## reinstall python library in your venv
+```
+python3 -m pip install pygraphviz pydot
+python3 -m pip install lxml
+python3 -m pip install catkin_pkg empy lark-parser pyparsing pyyaml setuptools argcomplete
+python3 -m pip install lark
+python3 -m pip install lark_parser
+```
 ### to activate venv,
 ```
 deactivate
+```
+### to remove venv,
+```
+(optional) deactivate
+cd ~/venvs
+rm -rf ./{your venv name}
 ```
