@@ -38,13 +38,18 @@ python3 -m pip install catkin_pkg empy lark-parser pyparsing pyyaml setuptools a
 ```
 mkdir -p ~/ros2_crystal
 cd ~/ros2_crystal
-tar xf ~/Downloads/ros2-release-distro-date-macos-amd64.tar.bz2
+tar xf ~/Downloads/ros2-eloquent-20201212-macos-amd64.tar.bz2
 ```
 ## 6. environmental setup
+### if you are using zsh, use zsh instead using bash
 ```
 source ~/ros2_crystal/ros2-osx/setup.bash
 ```
 ## 7. try some examples
+```
+ros2 run demo_nodes_cpp talker
+ros2 run demo_nodes_py listener
+```
 #### when bad interpreter: /usr/local/bin/python3: no such file or directory occur
 ```
 1. check is /usr/local/bin/python3
@@ -70,5 +75,41 @@ https://index.ros.org/doc/ros2/Troubleshooting/Installation-Troubleshooting/#mac
 ```
 https://index.ros.org/doc/ros2/Tutorials/Colcon-Tutorial/
 ```
-
-
+## how to uninstall ros2
+```
+rm -rf ~/ros2_crystal
+```
+# if python version doesn't correspond with ros2
+## install python version at python.org
+## check your python version
+```
+python --version
+```
+## check where your python is 
+```
+whcih python
+```
+#### my python is /usr/local/bin/python
+## make link
+### remember which python version was linked
+```
+ln -s -f /usr/local/bin/python{version whcih ros2 uses}  /usr/local/bin/python
+```
+## make venv
+```
+cd
+mkdir venvs
+python3 -m venv venvs/{your venv name}
+```
+## return python link
+```
+ln -s -f /usr/local/bin/python{version whcih you did remember}  /usr/local/bin/python
+```
+## activate venv
+```
+source ~/venvs/{your venv name}/bin/activate
+```
+### to activate venv,
+```
+deactivate
+```
