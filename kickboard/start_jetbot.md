@@ -1,5 +1,5 @@
 # I used jetbot AI and jetson nano also I used macos so if you want to use
-#Other os, use it and applicate this md file.
+# Other os, use it and applicate this md file.
 ## 1. download jetbot image
 #### goto https://github.com/NVIDIA-AI-IOT/jetbot/wiki/software-setup
 #### click jetbot_image_?.zip in step 1
