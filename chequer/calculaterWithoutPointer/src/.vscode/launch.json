@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${file}",
+            "env": {
+                "GOPATH": "/Users/ohdonggeun/go",
+                "PATH": "/Users/ohdonggeun/opt/anaconda3/bin:/usr/local/go/bin:/Users/ohdonggeun/bin:/usr/local/bin:/Users/ohdonggeun/opt/anaconda3/bin:/Users/ohdonggeun/go/bin:/Users/ohdonggeun/bin:/usr/local/bin:/Users/ohdonggeun/opt/anaconda3/bin:/Users/ohdonggeun/go/bin:/Users/ohdonggeun/bin:/usr/local/bin:/Users/ohdonggeun/opt/anaconda3/bin:/Users/ohdonggeun/go/bin:/Users/ohdonggeun/bin:/usr/local/bin:/Users/ohdonggeun/opt/anaconda3/bin:/Users/ohdonggeun/go:/Users/ohdonggeun/bin:/usr/local/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/ohdonggeun/venvs/scriptella/scriptella-1.2/bin:/Users/ohdonggeun/venvs/scriptella/scriptella-1.2/bin:/Users/ohdonggeun/venvs/scriptella/scriptella-1.2/bin:/Users/ohdonggeun/venvs/scriptella/scriptella-1.2/bin:/Users/ohdonggeun/venvs/scriptella/scriptella-1.2/bin"
+            },
+            "args": []
+        }
+    ]
+}
