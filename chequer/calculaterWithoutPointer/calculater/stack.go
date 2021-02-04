@@ -4,13 +4,6 @@ func Error(str string) {
 	panic(str)
 }
 
-type Element struct {
-	V string
-	T string
-}
-
-type ValueNType []Element
-
 func InitStack(top chan<- int) {
 	top <- -1
 }

@@ -28,7 +28,7 @@ func (inFix ValueNType) InfixToPostfix(stackMax int) ValueNType {
 		if inFix[i].T == "num" {
 			ValueNType.Push(postFix, postFixTop, stackMax, inFix[i].V)
 		} else {
-			for op >= checkPriority(inFix[i].V) {
+			for op <= checkPriority(inFix[i].V) {
 				ValueNType.Push(postFix,postFixTop,stackMax,ValueNType.Pop(operators,operatorsTop).V)
 			}
 			ValueNType.Push(operators,operatorsTop,stackMax,inFix[i].V)

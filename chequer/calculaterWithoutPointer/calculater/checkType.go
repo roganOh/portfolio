@@ -35,7 +35,6 @@ func groupingNumbers(eqn string) []string {
 	var state int
 	var num string
 	var sequence int
-	var last int
 	inFix := make([]string, len(eqn))
 
 	for i, v := range eqn {
@@ -156,13 +155,6 @@ func groupingNumbers(eqn string) []string {
 	if num != "" {
 		inFix[sequence] = num
 	}
-	for i, v := range inFix {
-		if v == "" {
-			last = i
-			break
-		}
-	}
-	inFix = inFix[:last]
 	return inFix
 }
 
