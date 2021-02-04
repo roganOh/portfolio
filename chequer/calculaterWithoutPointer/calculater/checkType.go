@@ -166,3 +166,4 @@ func MakeStringToStructStackWithType(eqn string, inFixList ValueNType) {
 		i++
 	}
 }
+
