@@ -1,8 +1,10 @@
 package main
 
-
 func main(){
- max := 2
- max = max <<1
- println(max )
+	a := []string{"c","h","e","q","u"}
+	for i,v:=range a{
+		print(i,v)
+	}
+
+
 }

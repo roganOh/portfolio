@@ -11,7 +11,7 @@ type Element struct {
 
 type ValueNType []Element
 
-func (data ValueNType) InitStack(top chan<- int) {
+func InitStack(top chan<- int) {
 	top <- -1
 }
 
@@ -21,7 +21,7 @@ func (data ValueNType) Pop(top chan int) Element {
 		Error("no more value in stack")
 	}
 	top <- topValue - 1
-	return data[topValue-1]
+	return data[topValue]
 }
 
 func (data ValueNType) Push(top chan int, stackMax int, ch string) {
@@ -30,13 +30,7 @@ func (data ValueNType) Push(top chan int, stackMax int, ch string) {
 		Error("stack overflow")
 	}
 	data[topValue+1].V = ch
-	data[topValue+1].T = func() string {
-		if IsDigit(ch) {
-			return "num"
-		} else {
-			return "operation"
-		}
-	}()
+	data[topValue+1].T = TypeDefine(ch)
 	top <- topValue + 1
 }
 

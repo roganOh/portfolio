@@ -7,8 +7,8 @@ import (
 
 func main() {
 	var eqn string
-	top := make(chan int, 1)
-	fmt.Scan(&eqn)
+	//top := make(chan int, 1)
+	calculater.GetCorrectEqn(&eqn)
 	stackMax := 10
 	for i, _ := range eqn {
 		if i+2 >= stackMax {
@@ -16,21 +16,16 @@ func main() {
 		}else{continue}
 	}
 	inFixList := make(calculater.ValueNType, stackMax)
-	for i, v := range eqn {
-		ch := string(v)
-		inFixList[i].V = ch
-		inFixList[i].T = func() string {
-			if calculater.IsDigit(ch) {
-				return "num"
-			} else {
-				return "operation"
-			}
-		}()
-	}
-	top <- 2
-	fmt.Println(calculater.ValueNType.Pop(inFixList, top))
+	postFixList := make(calculater.ValueNType, stackMax)
+	calculater.MakeStringToStructStackWithType(eqn,inFixList)
+	fmt.Println(inFixList)
+	postFixList = calculater.ValueNType.InfixToPostfix(inFixList,stackMax)
+	fmt.Println(postFixList)
 
-	topValue,_ := <-top
-	println(topValue)
+	//calculater.InitStack(top)
+	//calculater.ValueNType.Push(inFixList,top,stackMax,"s")
+	//fmt.Println(calculater.ValueNType.Pop(inFixList, top))
+
+
 
 }
