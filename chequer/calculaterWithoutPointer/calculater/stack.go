@@ -8,6 +8,16 @@ func InitStack(top chan<- int) {
 	top <- -1
 }
 
+func (data ValueNType) IsStackEmpty(top chan int) bool {
+	topValue, _ := <- top
+	top <- topValue
+	if topValue == -1 {
+		return true
+	} else {
+		return false
+	}
+}
+
 func (data ValueNType) Pop(top chan int) Element {
 	topValue, _ := <-top
 	if topValue == -1 {

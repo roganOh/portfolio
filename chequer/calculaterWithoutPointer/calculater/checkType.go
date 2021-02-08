@@ -55,17 +55,22 @@ func groupingNumbers(eqn string) []string {
 				num += ch
 			case "minus":
 				state = -1
-				num += ch
+				num += "-"
 			case "dot":
 				ErrorWithWhere(eqn, "dot can't come after number or operater", i)
 			case "closebrace":
-				ErrorWithWhere(eqn, "close brace can't come after operater", i)
+				if TypeDefine(inFix[sequence-1]) == "closebrace" {
+					inFix[sequence] = ch
+					sequence++
+				} else {
+					ErrorWithWhere(eqn, "close brace can't come after operater", i)
+				}
 			case "operater":
 				inFix[sequence] = ch
 				sequence++
 			case "openbrace":
 				if sequence > 0 {
-					if TypeDefine(inFix[sequence]) == "operater" {
+					if TypeDefine(inFix[sequence-1]) == "operater" {
 						inFix[sequence] = ch
 						sequence++
 					} else {
@@ -166,4 +171,3 @@ func MakeStringToStructStackWithType(eqn string, inFixList ValueNType) {
 		i++
 	}
 }
-
