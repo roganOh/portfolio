@@ -8,6 +8,7 @@ import (
 func main() {
 	var eqn string
 	var last int
+	var result string
 	//top := make(chan int, 1)
 	calculater.GetCorrectEqn(&eqn)
 	//stackMax := 10
@@ -28,7 +29,7 @@ func main() {
 	}
 	inFixList = inFixList[:last]
 	fmt.Println(inFixList)
-	postFixList = calculater.ValueNType.InfixToPostfix(inFixList,last)
+	postFixList= calculater.ValueNType.InfixToPostfix(inFixList,last)
 	fmt.Println(postFixList)
 	for i,v := range postFixList {
 		if v.V == ""{
@@ -37,6 +38,7 @@ func main() {
 		}
 		last =i+1
 	}
-	calculater.ValueNType.Calculate(postFixList,last)
+	result = calculater.ValueNType.Calculate(postFixList,last)
+	println(result)
 }
 
