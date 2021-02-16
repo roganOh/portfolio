@@ -1,6 +1,8 @@
 package calculater
 
-import "strconv"
+import (
+	"strconv"
+)
 
 func IsDigit(ch string) bool {
 	_, err := strconv.ParseFloat(ch, 64)
@@ -11,163 +13,196 @@ func IsNotDigit(ch string) bool {
 	return IsDigit(ch) == false
 }
 
-func TypeDefine(ch string) string {
+func TypeDefine(ch string) ElementType {
 	if IsDigit(ch) {
-		return "num"
+		return number
 	} else {
 		switch ch {
 		case "_":
-			return "minus"
+			return below
 		case "+", "-", "*", "/":
-			return "operater"
+			return operater
 		case "[", "{", "(":
-			return "openbrace"
+			return openbrace
 		case "]", "}", ")":
-			return "closebrace"
+			return closebrace
 		case ".":
-			return "dot"
+			return dot
 		}
 	}
-	return "unknown"
+	return unknown
+}
+
+func defaultCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
+	elementType := TypeDefine(this.ch)
+	switch elementType {
+	case number:
+		this.state = OnlyOneNumber
+		this.num += this.ch
+	case below:
+		this.state = OnlyMinus
+		this.num += "-"
+	case dot:
+		ErrorWithWhere(eqn, "dot can't come after number or operater", this.i)
+	case closebrace:
+		if TypeDefine(this.inFix[this.sequence-1]) == closebrace {
+			this.inFix[this.sequence] = this.ch
+			this.sequence++
+		} else {
+			ErrorWithWhere(eqn, "close brace can't come after operater", this.i)
+		}
+	case operater:
+		this.inFix[this.sequence] = this.ch
+		this.sequence++
+	case openbrace:
+		if this.sequence > 0 {
+			if TypeDefine(this.inFix[this.sequence-1]) == operater {
+				this.inFix[this.sequence] = this.ch
+				this.sequence++
+			} else {
+				ErrorWithWhere(eqn, "open brace error", this.i)
+			}
+		} else {
+			this.inFix[this.sequence] = this.ch
+			this.sequence++
+		}
+
+	}
+	return this
+
+}
+
+func onlyOneNumberCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
+	elementType := TypeDefine(this.ch)
+	switch elementType {
+	case number:
+		this.state = Integer
+		this.num += this.ch
+	case below:
+		ErrorWithWhere(eqn, "minus can't come right after number", this.i)
+	case operater, closebrace:
+		this.inFix[this.sequence] = this.num
+		this.sequence++
+		this.inFix[this.sequence] = this.ch
+		this.sequence++
+		this.state = Default
+		this.num = ""
+	case openbrace:
+		ErrorWithWhere(eqn, "open brace can't come right after number", this.i)
+	case dot:
+		this.num += this.ch
+		this.state = NumberWithDot
+	}
+	return this
+}
+
+func integerCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
+	elementType := TypeDefine(this.ch)
+	switch elementType {
+	case number:
+		this.num += this.ch
+	case below:
+		ErrorWithWhere(eqn, "minus can't come right after number", this.i)
+	case operater, closebrace:
+		this.inFix[this.sequence] = this.num
+		this.sequence++
+		this.inFix[this.sequence] = this.ch
+		this.sequence++
+		this.state = Default
+		this.num = ""
+	case openbrace:
+		ErrorWithWhere(eqn, "open brace can't come right after number", this.i)
+	case dot:
+		this.num += this.ch
+		this.state = NumberWithDot
+	}
+	return this
+}
+
+func decimalCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
+	elementType := TypeDefine(this.ch)
+	switch elementType {
+	case number:
+		this.num += this.ch
+	case below:
+		ErrorWhenBelowMinusComeAfterBelowMinus(eqn, this.i)
+	case operater, closebrace:
+		this.inFix[this.sequence] = this.num
+		this.sequence++
+		this.inFix[this.sequence] = this.ch
+		this.sequence++
+		this.state = Default
+		this.num = ""
+	case openbrace:
+		ErrorWithWhere(eqn, "open brace can't come right after number", this.i)
+	case dot:
+		ErrorWithWhere(eqn, "dot can't come in decimal number", this.i)
+	}
+	return this
+}
+
+func numberWithDotCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
+	elementType := TypeDefine(this.ch)
+	switch elementType {
+	case number:
+		this.num += this.ch
+		this.state = Decimal
+	case below:
+		ErrorWhenBelowMinusComeAfterDot(eqn, this.i)
+	case operater:
+		ErrorWhenOperaterComeAfterDot(eqn, this.i)
+	case openbrace, closebrace:
+		ErrorWhenBraceComeAfterDot(eqn, this.i)
+	case dot:
+		ErrorWhenDotComAfterDot(eqn, this.i)
+	}
+	return this
+}
+
+type groupForLessSwitch struct {
+	i        int
+	ch       string
+	state    StateOfEqn
+	inFix    []string
+	num      string
+	sequence int
 }
 
 func groupingNumbers(eqn string) []string {
-	var state int
-	var num string
-	var sequence int
-	inFix := make([]string, len(eqn))
-
-	for i, v := range eqn {
-		ch := string(v)
-		switch state {
-		case -1:
-			switch TypeDefine(ch) {
-			case "num":
-				state = 1
-				num += ch
-			default:
-				ErrorWithWhere(eqn, "only number can come after minus", i)
+	this := groupForLessSwitch{inFix: make([]string, len(eqn))}
+	var v int32
+	for this.i, v = range eqn {
+		this.ch = string(v)
+		switch this.state {
+		case OnlyMinus:
+			if TypeDefine(this.ch) == number {
+				this.state = OnlyOneNumber
+				this.num += this.ch
+			} else {
+				ErrorWhenOtherComeAfterBelowMinus(eqn, this.i)
 			}
-		case 0:
-			switch TypeDefine(ch) {
-			case "num":
-				state = 1
-				num += ch
-			case "minus":
-				state = -1
-				num += "-"
-			case "dot":
-				ErrorWithWhere(eqn, "dot can't come after number or operater", i)
-			case "closebrace":
-				if TypeDefine(inFix[sequence-1]) == "closebrace" {
-					inFix[sequence] = ch
-					sequence++
-				} else {
-					ErrorWithWhere(eqn, "close brace can't come after operater", i)
-				}
-			case "operater":
-				inFix[sequence] = ch
-				sequence++
-			case "openbrace":
-				if sequence > 0 {
-					if TypeDefine(inFix[sequence-1]) == "operater" {
-						inFix[sequence] = ch
-						sequence++
-					} else {
-						ErrorWithWhere(eqn, "open brace error", i)
-					}
-				} else {
-					inFix[sequence] = ch
-					sequence++
-				}
-
-			}
-		case 1:
-			switch TypeDefine(ch) {
-			case "num":
-				state = 2
-				num += ch
-			case "minus":
-				ErrorWithWhere(eqn, "minus can't come right after number", i)
-			case "operater", "closebrace":
-				inFix[sequence] = num
-				sequence++
-				inFix[sequence] = ch
-				sequence++
-				state = 0
-				num = ""
-			case "openbrace":
-				ErrorWithWhere(eqn, "open brace can't come right after number", i)
-			case "dot":
-				num += ch
-				state = 3
-			}
-		case 2:
-			switch TypeDefine(ch) {
-			case "num":
-				num += ch
-			case "minus":
-				ErrorWithWhere(eqn, "minus can't come right after number", i)
-			case "operater", "closebrace":
-				inFix[sequence] = num
-				sequence++
-				inFix[sequence] = ch
-				sequence++
-				state = 0
-				num = ""
-			case "openbrace":
-				ErrorWithWhere(eqn, "open brace can't come right after number", i)
-			case "dot":
-				num += ch
-				state = 3
-			}
-		case 3:
-			switch TypeDefine(ch) {
-			case "num":
-				num += ch
-				state = 4
-			case "minus":
-				ErrorWithWhere(eqn, "minus can't come right after number", i)
-			case "operater":
-				ErrorWithWhere(eqn, "operater can't ome in decimal number", i)
-			case "openbrace", "closebrace":
-				ErrorWithWhere(eqn, "brace can't come right after number", i)
-			case "dot":
-				ErrorWithWhere(eqn, "dot can't come in decimal number", i)
-			}
-		case 4:
-			switch TypeDefine(ch) {
-			case "num":
-				num += ch
-			case "minus":
-				ErrorWithWhere(eqn, "minus can't come right after number", i)
-			case "operater", "closebrace":
-				inFix[sequence] = num
-				sequence++
-				inFix[sequence] = ch
-				sequence++
-				state = 0
-				num = ""
-			case "openbrace":
-				ErrorWithWhere(eqn, "open brace can't come right after number", i)
-			case "dot":
-				ErrorWithWhere(eqn, "dot can't come in decimal number", i)
-			}
-
+		case Default:
+			this = defaultCase(eqn, this)
+		case OnlyOneNumber:
+			this = onlyOneNumberCase(eqn, this)
+		case Integer:
+			this = integerCase(eqn, this)
+		case NumberWithDot:
+			this = numberWithDotCase(eqn, this)
+		case Decimal:
+			this = decimalCase(eqn, this)
 		}
-
 	}
-	if num != "" {
-		inFix[sequence] = num
+	if this.num != "" {
+		this.inFix[this.sequence] = this.num
 	}
-	return inFix
+	return this.inFix
 }
 
-func MakeStringToStructStackWithType(eqn string, inFixList ValueNType) {
+func MakeStringToStructStackWithType(eqn string, inFixList ValueNType) ValueNType {
 	equationList := groupingNumbers(eqn)
-	for i, v := range equationList {
-		inFixList[i].V = v
-		inFixList[i].T = TypeDefine(v)
-		i++
+	for _, v := range equationList {
+		inFixList = append(inFixList, Element{v, TypeDefine(v)})
 	}
+	return inFixList
 }

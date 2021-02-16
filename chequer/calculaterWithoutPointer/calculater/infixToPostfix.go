@@ -1,23 +1,24 @@
 package calculater
 
-func checkPriority(ch string) int {
+func checkPriority(ch string) OperaterType {
 	switch ch {
 	case "[", "]":
-		return 0
+		return LBrace
 	case "{", "}":
-		return 1
+		return MBrace
 	case "(", ")":
-		return 2
+		return SBRace
 	case "+", "-":
-		return 3
+		return plusMinus
 	case "*", "/":
-		return 4
+		return multiplyDivide
 	}
-	return -1
+	return otherOperater
 }
 
-func (inFix ValueNType) InfixToPostfix(stackMax int) ValueNType {
-	var op int
+func (inFix ValueNType) InfixToPostfix() ValueNType {
+	var op OperaterType
+	stackMax := len(inFix)
 	postFix := make(ValueNType, stackMax)
 	postFixTop := make(chan int, 1)
 	operators := make(ValueNType, stackMax)
@@ -25,11 +26,11 @@ func (inFix ValueNType) InfixToPostfix(stackMax int) ValueNType {
 	InitStack(operatorsTop)
 	InitStack(postFixTop)
 	for i := 0; i < stackMax; i++ {
-		if inFix[i].T == "num" {
+		if inFix[i].T == number {
 			ValueNType.Push(postFix, postFixTop, stackMax, inFix[i].V)
-		} else if inFix[i].T == "openbrace" {
+		} else if inFix[i].T == openbrace {
 			ValueNType.Push(operators, operatorsTop, stackMax, inFix[i].V)
-		} else if inFix[i].T == "closebrace" {
+		} else if inFix[i].T == closebrace {
 			switch inFix[i].V {
 			case "]":
 				for {

@@ -14,7 +14,7 @@ func ErrorWithWhere(eqn string,message string,i int) {
 func isNotHaveTypo(eqn string) bool {
 	for _, v := range eqn {
 		ch := string(v)
-		if TypeDefine(ch) == "unknown" {
+		if TypeDefine(ch) == unknown {
 			return false
 		}
 	}
@@ -30,9 +30,9 @@ func isHaveCorrectBrace(eqn string) bool {
 
 	for _, v := range eqn {
 		ch := string(v)
-		if TypeDefine(ch) == "openbrace" {
+		if TypeDefine(ch) == openbrace {
 			ValueNType.Push(stack, braceTop, stackMax, ch)
-		} else if TypeDefine(ch) == "closebrace" {
+		} else if TypeDefine(ch) == closebrace {
 			if topValue = <-braceTop; topValue == -1 {
 				return false
 			}
@@ -63,14 +63,14 @@ func isHaveCorrectBrace(eqn string) bool {
 
 func isLastNumOrBrace(eqn string) bool {
 	lastChar := string(eqn[len(eqn)-1])
-	return TypeDefine(lastChar) == "num" || TypeDefine(lastChar) == "closebrace"
+	return TypeDefine(lastChar) == number || TypeDefine(lastChar) == closebrace
 }
 
 func isCorrectEqn(eqn string) bool {
 	return isNotHaveTypo(eqn) && isHaveCorrectBrace(eqn) && isLastNumOrBrace(eqn)
 }
 
-func GetCorrectEqn(eqn *string) string {
+func GetCorrectEqn(eqn *string) {
 	if *eqn == "" {
 		fmt.Scan(eqn)
 	}
@@ -78,5 +78,4 @@ func GetCorrectEqn(eqn *string) string {
 		println("wrong equation please write again")
 		fmt.Scan(eqn)
 	}
-	return *eqn
 }

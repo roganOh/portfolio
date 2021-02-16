@@ -7,38 +7,16 @@ import (
 
 func main() {
 	var eqn string
-	var last int
 	var result string
-	//top := make(chan int, 1)
-	calculater.GetCorrectEqn(&eqn)
-	//stackMax := 10
-	//for i, _ := range eqn {
-	//	if i+2 >= stackMax {
-	//		stackMax = stackMax << 1
-	//	}else{continue}
-	//}
-	inFixList := make(calculater.ValueNType, len(eqn))
+	var inFixList calculater.ValueNType
 	postFixList := make(calculater.ValueNType,len(eqn))
-	calculater.MakeStringToStructStackWithType(eqn,inFixList)
-	for i,v := range inFixList {
-		if v.V == ""{
-			last=i
-			break
-		}
-		last =i+1
-	}
-	inFixList = inFixList[:last]
+
+	calculater.GetCorrectEqn(&eqn)
+	inFixList = calculater.MakeStringToStructStackWithType(eqn,inFixList)
 	fmt.Println(inFixList)
-	postFixList= calculater.ValueNType.InfixToPostfix(inFixList,last)
+	postFixList= calculater.ValueNType.InfixToPostfix(inFixList)
 	fmt.Println(postFixList)
-	for i,v := range postFixList {
-		if v.V == ""{
-			last=i
-			break
-		}
-		last =i+1
-	}
-	result = calculater.ValueNType.Calculate(postFixList,last)
+	result = calculater.ValueNType.Calculate(postFixList)
 	println(result)
 }
 

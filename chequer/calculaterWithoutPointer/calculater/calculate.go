@@ -2,7 +2,8 @@ package calculater
 
 import "strconv"
 
-func (postFix ValueNType) Calculate(stackMax int) string {
+func (postFix ValueNType) Calculate() string {
+	stackMax := len(postFix)
 	var nowNum, postNum float64
 	postFixTop := make(chan int, 1)
 	postFixTop <- stackMax - 1
@@ -13,7 +14,7 @@ func (postFix ValueNType) Calculate(stackMax int) string {
 		if v.V == ""{
 			break
 		}
-		if v.T == "num" {
+		if v.T == number {
 			result.Push(resultTop, stackMax, v.V)
 		} else {
 			postNum, _ = strconv.ParseFloat(result.Pop(resultTop).V, 64)
@@ -29,7 +30,7 @@ func (postFix ValueNType) Calculate(stackMax int) string {
 				resultnum := strconv.FormatFloat(nowNum*postNum, 'g', -1, 64)
 				result.Push(resultTop, stackMax, resultnum)
 			case "/":
-				resultnum := strconv.FormatFloat(nowNum/postNum, 'g', -1, 64)
+				resultnum := strconv.FormatFloat(nowNum/postNum, 'g', 3, 64)
 				result.Push(resultTop, stackMax, resultnum)
 			}
 		}
