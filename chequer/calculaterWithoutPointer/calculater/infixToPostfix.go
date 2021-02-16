@@ -16,65 +16,61 @@ func checkPriority(ch string) OperaterType {
 	return otherOperater
 }
 
+func popFromOperators(this GroupParamsForPostfixer) string {
+	return this.operators.Pop(this.operatorsTop).V
+}
+
+func popNPushUntilBraceMatch (nowElement string,this GroupParamsForPostfixer,stackMax int) {
+	var matchBrace string
+	switch nowElement {
+	case "]":
+		matchBrace = "["
+	case "}":
+		matchBrace = "{"
+	case ")":
+		matchBrace = "("
+	}
+	for stackResult := popFromOperators(this); stackResult != matchBrace; stackResult = popFromOperators(this) {
+		ValueNType.Push(this.postFix,this.postFixTop,stackMax,stackResult)
+	}
+}
+
 func (inFix ValueNType) InfixToPostfix() ValueNType {
 	var op OperaterType
 	stackMax := len(inFix)
-	postFix := make(ValueNType, stackMax)
-	postFixTop := make(chan int, 1)
-	operators := make(ValueNType, stackMax)
-	operatorsTop := make(chan int, 1)
-	InitStack(operatorsTop)
-	InitStack(postFixTop)
+	this := GroupParamsForPostfixer{
+		operators : make(ValueNType, stackMax),
+		operatorsTop : make(chan int, 1),
+		postFix : make(ValueNType, stackMax),
+		postFixTop : make(chan int, 1),
+	}
+	InitStack(this.operatorsTop)
+	InitStack(this.postFixTop)
 	for i := 0; i < stackMax; i++ {
 		if inFix[i].T == number {
-			ValueNType.Push(postFix, postFixTop, stackMax, inFix[i].V)
+			ValueNType.Push(this.postFix, this.postFixTop, stackMax, inFix[i].V)
 		} else if inFix[i].T == openbrace {
-			ValueNType.Push(operators, operatorsTop, stackMax, inFix[i].V)
+			ValueNType.Push(this.operators, this.operatorsTop, stackMax, inFix[i].V)
 		} else if inFix[i].T == closebrace {
-			switch inFix[i].V {
-			case "]":
-				for {
-					stackResult := ValueNType.Pop(operators, operatorsTop).V
-					if stackResult == "[" {
-						break
-					}
-					ValueNType.Push(postFix, postFixTop, stackMax, stackResult)
-				}
-			case "}":
-				for {
-					stackResult := ValueNType.Pop(operators, operatorsTop).V
-					if stackResult == "{" {
-						break
-					}
-					ValueNType.Push(postFix, postFixTop, stackMax, stackResult)
-				}
-			case ")":
-				for {
-					stackResult := ValueNType.Pop(operators, operatorsTop).V
-					if stackResult == "(" {
-						break
-					}
-					ValueNType.Push(postFix, postFixTop, stackMax, stackResult)
-				}
-			}
+			popNPushUntilBraceMatch(inFix[i].V,this,stackMax)
 		} else {
-			for !operators.IsStackEmpty(operatorsTop) {
-				op=checkPriority(operators.Peek(operatorsTop).V)
+			for !this.operators.IsStackEmpty(this.operatorsTop) {
+				op=checkPriority(this.operators.Peek(this.operatorsTop).V)
 				if  op >= checkPriority(inFix[i].V) {
-					postFix.Push(postFixTop, stackMax, ValueNType.Pop(operators, operatorsTop).V)
+					this.postFix.Push(this.postFixTop, stackMax, ValueNType.Pop(this.operators, this.operatorsTop).V)
 				} else {
 					break
 				}
 			}
-			ValueNType.Push(operators, operatorsTop, stackMax, inFix[i].V)
+			ValueNType.Push(this.operators, this.operatorsTop, stackMax, inFix[i].V)
 		}
 	}
-	for !operators.IsStackEmpty(operatorsTop) {
-		if ValueNType.Peek(operators, operatorsTop).V == "" {
+	for !this.operators.IsStackEmpty(this.operatorsTop) {
+		if ValueNType.Peek(this.operators, this.operatorsTop).V == "" {
 			break
 		}
-		ValueNType.Push(postFix, postFixTop, stackMax, operators.Pop(operatorsTop).V)
+		ValueNType.Push(this.postFix, this.postFixTop, stackMax, this.operators.Pop(this.operatorsTop).V)
 	}
-	close(operatorsTop)
-	return postFix
+	close(this.operatorsTop)
+	return this.postFix
 }

@@ -9,8 +9,13 @@ func IsDigit(ch string) bool {
 	return err == nil
 }
 
-func IsNotDigit(ch string) bool {
-	return IsDigit(ch) == false
+func IsTypeInTheseTypes(identified ElementType, typeGroup ...ElementType) bool {
+	for _, v := range typeGroup {
+		if identified == v {
+			return true
+		}
+	}
+	return false
 }
 
 func TypeDefine(ch string) ElementType {
@@ -33,35 +38,37 @@ func TypeDefine(ch string) ElementType {
 	return unknown
 }
 
-func defaultCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
+func oneDigitEnd(this GroupParamsForGrouping) GroupParamsForGrouping {
+	this.inFix[this.sequence] = this.num
+	this.sequence++
+	this.inFix[this.sequence] = this.ch
+	this.sequence++
+	this.state = Default
+	this.num = ""
+	return this
+}
+
+func defaultCase(eqn string, this GroupParamsForGrouping) GroupParamsForGrouping {
 	elementType := TypeDefine(this.ch)
 	switch elementType {
 	case number:
-		this.state = OnlyOneNumber
+		this.state = SingleDigit
 		this.num += this.ch
 	case below:
 		this.state = OnlyMinus
 		this.num += "-"
 	case dot:
-		ErrorWithWhere(eqn, "dot can't come after number or operater", this.i)
-	case closebrace:
-		if TypeDefine(this.inFix[this.sequence-1]) == closebrace {
-			this.inFix[this.sequence] = this.ch
-			this.sequence++
-		} else {
-			ErrorWithWhere(eqn, "close brace can't come after operater", this.i)
-		}
+		ErrorDotComeAfterNone(eqn, this.i)
 	case operater:
 		this.inFix[this.sequence] = this.ch
 		this.sequence++
-	case openbrace:
-		if this.sequence > 0 {
-			if TypeDefine(this.inFix[this.sequence-1]) == operater {
-				this.inFix[this.sequence] = this.ch
-				this.sequence++
-			} else {
-				ErrorWithWhere(eqn, "open brace error", this.i)
-			}
+	case openbrace, closebrace:
+		//closebrace can't come in first because function isHaveCorrectBrace is working
+		if this.sequence > 0 && IsTypeInTheseTypes(TypeDefine(this.inFix[this.sequence-1]), operater, openbrace) {
+			this.inFix[this.sequence] = this.ch
+			this.sequence++
+		} else if this.sequence > 0 && IsTypeInTheseTypes(TypeDefine(this.inFix[this.sequence-1]), operater, openbrace) {
+			ErrorBraceComeAfterNone(eqn, this.i)
 		} else {
 			this.inFix[this.sequence] = this.ch
 			this.sequence++
@@ -72,23 +79,18 @@ func defaultCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
 
 }
 
-func onlyOneNumberCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
+func singleDigitCase(eqn string, this GroupParamsForGrouping) GroupParamsForGrouping {
 	elementType := TypeDefine(this.ch)
 	switch elementType {
 	case number:
 		this.state = Integer
 		this.num += this.ch
 	case below:
-		ErrorWithWhere(eqn, "minus can't come right after number", this.i)
+		ErrorBelowMinusComeAfterDigit(eqn, this.i)
 	case operater, closebrace:
-		this.inFix[this.sequence] = this.num
-		this.sequence++
-		this.inFix[this.sequence] = this.ch
-		this.sequence++
-		this.state = Default
-		this.num = ""
+		this = oneDigitEnd(this)
 	case openbrace:
-		ErrorWithWhere(eqn, "open brace can't come right after number", this.i)
+		ErrorOpenBraceComeAfterSingleDigit(eqn, this.i)
 	case dot:
 		this.num += this.ch
 		this.state = NumberWithDot
@@ -96,22 +98,17 @@ func onlyOneNumberCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
 	return this
 }
 
-func integerCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
+func integerCase(eqn string, this GroupParamsForGrouping) GroupParamsForGrouping {
 	elementType := TypeDefine(this.ch)
 	switch elementType {
 	case number:
 		this.num += this.ch
 	case below:
-		ErrorWithWhere(eqn, "minus can't come right after number", this.i)
+		ErrorBelowMinusComeAfterDigit(eqn, this.i)
 	case operater, closebrace:
-		this.inFix[this.sequence] = this.num
-		this.sequence++
-		this.inFix[this.sequence] = this.ch
-		this.sequence++
-		this.state = Default
-		this.num = ""
+		this = oneDigitEnd(this)
 	case openbrace:
-		ErrorWithWhere(eqn, "open brace can't come right after number", this.i)
+		ErrorOpenBraceComeAfterInteger(eqn, this.i)
 	case dot:
 		this.num += this.ch
 		this.state = NumberWithDot
@@ -119,76 +116,49 @@ func integerCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
 	return this
 }
 
-func decimalCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
+func decimalCase(eqn string, this GroupParamsForGrouping) GroupParamsForGrouping {
 	elementType := TypeDefine(this.ch)
 	switch elementType {
 	case number:
 		this.num += this.ch
 	case below:
-		ErrorWhenBelowMinusComeAfterBelowMinus(eqn, this.i)
+		ErrorBelowMinusComeAfterDigit(eqn, this.i)
 	case operater, closebrace:
-		this.inFix[this.sequence] = this.num
-		this.sequence++
-		this.inFix[this.sequence] = this.ch
-		this.sequence++
-		this.state = Default
-		this.num = ""
+		this = oneDigitEnd(this)
 	case openbrace:
-		ErrorWithWhere(eqn, "open brace can't come right after number", this.i)
+		ErrorOpenBraceComeAfterBelowMinus(eqn, this.i)
 	case dot:
-		ErrorWithWhere(eqn, "dot can't come in decimal number", this.i)
+		ErrorDotComeAfterBelowMinus(eqn, this.i)
 	}
 	return this
-}
-
-func numberWithDotCase(eqn string, this groupForLessSwitch) groupForLessSwitch {
-	elementType := TypeDefine(this.ch)
-	switch elementType {
-	case number:
-		this.num += this.ch
-		this.state = Decimal
-	case below:
-		ErrorWhenBelowMinusComeAfterDot(eqn, this.i)
-	case operater:
-		ErrorWhenOperaterComeAfterDot(eqn, this.i)
-	case openbrace, closebrace:
-		ErrorWhenBraceComeAfterDot(eqn, this.i)
-	case dot:
-		ErrorWhenDotComAfterDot(eqn, this.i)
-	}
-	return this
-}
-
-type groupForLessSwitch struct {
-	i        int
-	ch       string
-	state    StateOfEqn
-	inFix    []string
-	num      string
-	sequence int
 }
 
 func groupingNumbers(eqn string) []string {
-	this := groupForLessSwitch{inFix: make([]string, len(eqn))}
+	this := GroupParamsForGrouping{inFix: make([]string, len(eqn))}
 	var v int32
 	for this.i, v = range eqn {
 		this.ch = string(v)
 		switch this.state {
 		case OnlyMinus:
 			if TypeDefine(this.ch) == number {
-				this.state = OnlyOneNumber
+				this.state = SingleDigit
 				this.num += this.ch
 			} else {
-				ErrorWhenOtherComeAfterBelowMinus(eqn, this.i)
+				ErrorOtherComeAfterBelowMinus(eqn, this.i)
 			}
 		case Default:
 			this = defaultCase(eqn, this)
-		case OnlyOneNumber:
-			this = onlyOneNumberCase(eqn, this)
+		case SingleDigit:
+			this = singleDigitCase(eqn, this)
 		case Integer:
 			this = integerCase(eqn, this)
 		case NumberWithDot:
-			this = numberWithDotCase(eqn, this)
+			if TypeDefine(this.ch) == number {
+				this.num += this.ch
+				this.state = Decimal
+			} else {
+				ErrorOtherComeAfterDot(eqn, this.i)
+			}
 		case Decimal:
 			this = decimalCase(eqn, this)
 		}
