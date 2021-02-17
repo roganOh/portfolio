@@ -5,11 +5,13 @@ import "fmt"
 func ErrorWithWhere(eqn string,message ErrorMsg,i int) {
 	var error string
 	println(message)
-	println("       "+eqn)
+	//println("       "+eqn)
+	println(eqn)
 	for a := 0; a < i; a++ {
 		error += " "
 	}
-	Error(error + "^")
+	println(error + "^")
+	println("please write correct eqn")
 }
 func isNotHaveTypo(eqn string) bool {
 	for _, v := range eqn {
@@ -78,3 +80,4 @@ func GetCorrectEqn(eqn *string) {
 		fmt.Scan(eqn)
 	}
 }
+

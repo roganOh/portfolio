@@ -122,7 +122,7 @@ func decimalCase(this GroupParamsForGrouping) (bool, GroupParamsForGrouping) {
 	return true, this
 }
 
-func MakeInFixWithMappingType(eqn string, inFixList ValueNType) ValueNType {
+func MakeInFixWithMappingType(eqn string, inFixList ValueNType) (bool,ValueNType) {
 	this := GroupParamsForGrouping{inFix: inFixList}
 	var v int32
 	var noErr bool = true
@@ -155,6 +155,7 @@ func MakeInFixWithMappingType(eqn string, inFixList ValueNType) ValueNType {
 		if !noErr {
 			//if have error
 			ErrorWithWhere(eqn, this.msg, this.i)
+			return false,this.inFix
 		}
 
 	}
@@ -162,5 +163,5 @@ func MakeInFixWithMappingType(eqn string, inFixList ValueNType) ValueNType {
 		this.inFix = append(this.inFix, Element{this.num, TypeDefine(this.num)})
 	}
 
-	return this.inFix
+	return true, this.inFix
 }
