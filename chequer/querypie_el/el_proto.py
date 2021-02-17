@@ -36,7 +36,7 @@ def is_job_exists(job_name, engine):
     """
     check if job exists
 
-    :return: 1 when exists and programm will make user to write his job name again & 0 when not exsits
+    :return: 1 when exists and program will make user to write his job name again & 0 when not exsits
     """
     try:
         before_job = pd.read_sql_query(
