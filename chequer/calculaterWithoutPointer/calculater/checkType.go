@@ -39,10 +39,8 @@ func TypeDefine(ch string) ElementType {
 }
 
 func oneDigitEnd(this GroupParamsForGrouping) GroupParamsForGrouping {
-	this.inFix[this.sequence] = this.num
-	this.sequence++
-	this.inFix[this.sequence] = this.ch
-	this.sequence++
+	this.inFix = append(this.inFix, Element{this.num, TypeDefine(this.num)})
+	this.inFix = append(this.inFix, Element{this.ch, TypeDefine(this.ch)})
 	this.state = Default
 	this.num = ""
 	return this
@@ -61,21 +59,24 @@ func defaultCase(this GroupParamsForGrouping) (bool, GroupParamsForGrouping) {
 		this.msg = ErrorDotComeAfterNone
 		return false, this
 	case operater:
-		this.inFix[this.sequence] = this.ch
-		this.sequence++
-	case openbrace, closebrace:
-		//closebrace can't come in first because function isHaveCorrectBrace is working
-		if this.sequence > 0 && IsTypeInTheseTypes(TypeDefine(this.inFix[this.sequence-1]), operater, openbrace) {
-			this.inFix[this.sequence] = this.ch
-			this.sequence++
-		} else if this.sequence > 0 && IsTypeInTheseTypes(TypeDefine(this.inFix[this.sequence-1]), operater, openbrace) {
-			this.msg = ErrorBraceComeAfterNone
-			return false, this
+		this.inFix = append(this.inFix, Element{this.ch, TypeDefine(this.ch)})
+	case openbrace:
+		if len(this.inFix) ==0 {
+			this.inFix = append(this.inFix, Element{this.ch, TypeDefine(this.ch)})
+		} else if IsTypeInTheseTypes(this.inFix[len(this.inFix)-1].T, operater, openbrace) {
+			this.inFix = append(this.inFix, Element{this.ch, TypeDefine(this.ch)})
 		} else {
-			this.inFix[this.sequence] = this.ch
-			this.sequence++
+			this.msg = ErrorBraceLocateIsWrong
+			return false, this
 		}
-
+	case closebrace:
+		//closebrace can't come in first because function isHaveCorrectBrace is working
+		if IsTypeInTheseTypes(this.inFix[len(this.inFix)-1].T, closebrace, openbrace) {
+			this.inFix = append(this.inFix, Element{this.ch, TypeDefine(this.ch)})
+		} else {
+			this.msg = ErrorBraceLocateIsWrong
+			return false, this
+		}
 	}
 	return true, this
 
@@ -121,14 +122,15 @@ func decimalCase(this GroupParamsForGrouping) (bool, GroupParamsForGrouping) {
 	return true, this
 }
 
-func groupingNumbers(eqn string) []string {
-	this := GroupParamsForGrouping{inFix: make([]string, len(eqn))}
+func MakeInFixWithMappingType(eqn string, inFixList ValueNType) ValueNType {
+	this := GroupParamsForGrouping{inFix: inFixList}
 	var v int32
 	var noErr bool = true
 	for this.i, v = range eqn {
 		this.ch = string(v)
-
 		switch this.state {
+		case Default:
+			noErr, this = defaultCase(this)
 		case OnlyMinus:
 			if TypeDefine(this.ch) == number {
 				this.state = Integer
@@ -137,8 +139,6 @@ func groupingNumbers(eqn string) []string {
 				this.msg = ErrorOtherComeAfterBelowMinus
 				noErr = false
 			}
-		case Default:
-			noErr, this = defaultCase(this)
 		case Integer:
 			noErr, this = integerCase(this)
 		case NumberWithDot:
@@ -156,18 +156,11 @@ func groupingNumbers(eqn string) []string {
 			//if have error
 			ErrorWithWhere(eqn, this.msg, this.i)
 		}
-		if this.num != "" {
-			this.inFix[this.sequence] = this.num
-		}
+
+	}
+	if this.num != "" {
+		this.inFix = append(this.inFix, Element{this.num, TypeDefine(this.num)})
 	}
 
 	return this.inFix
-}
-
-func MakeStringToStructStackWithType(eqn string, inFixList ValueNType) ValueNType {
-	equationList := groupingNumbers(eqn)
-	for _, v := range equationList {
-		inFixList = append(inFixList, Element{v, TypeDefine(v)})
-	}
-	return inFixList
 }

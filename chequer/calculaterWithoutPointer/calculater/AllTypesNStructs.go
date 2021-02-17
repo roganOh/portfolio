@@ -12,13 +12,12 @@ type OperaterType int
 type ErrorMsg string
 
 type GroupParamsForGrouping struct {
-	i        int
-	ch       string
-	state    StateOfEqn
-	inFix    []string
-	num      string
-	sequence int
-	msg      ErrorMsg
+	i     int
+	ch    string
+	state StateOfEqn
+	inFix ValueNType
+	num   string
+	msg   ErrorMsg
 }
 
 type GroupParamsForPostfixer struct {
@@ -56,13 +55,12 @@ const (
 )
 
 const (
-	ErrorOtherComeAfterBelowMinus      ErrorMsg = "only number can come after minus"
-	ErrorOtherComeAfterDot             ErrorMsg = "only number can come right after dot"
-	ErrorOpenBraceComeAfterBelowMinus  ErrorMsg = "open brace can't come right after number"
-	ErrorDotComeAfterBelowMinus        ErrorMsg = "dot can't come in decimal number"
-	ErrorOpenBraceComeAfterInteger     ErrorMsg = "open brace can't come right after number"
-	ErrorBelowMinusComeAfterDigit      ErrorMsg = "minus can't come right after number"
-	ErrorBraceComeAfterNone            ErrorMsg = "brace can't come after None"
-	ErrorDotComeAfterNone              ErrorMsg = "dot can't come after number or operater"
+	ErrorOtherComeAfterBelowMinus     ErrorMsg = "only number can come after minus"
+	ErrorOtherComeAfterDot            ErrorMsg = "only number can come right after dot"
+	ErrorOpenBraceComeAfterBelowMinus ErrorMsg = "open brace can't come right after number"
+	ErrorDotComeAfterBelowMinus       ErrorMsg = "dot can't come in decimal number"
+	ErrorOpenBraceComeAfterInteger    ErrorMsg = "open brace can't come right after number"
+	ErrorBelowMinusComeAfterDigit     ErrorMsg = "minus can't come right after number"
+	ErrorBraceLocateIsWrong           ErrorMsg = "brace locate error"
+	ErrorDotComeAfterNone             ErrorMsg = "dot can't come after number or operater"
 )
-
