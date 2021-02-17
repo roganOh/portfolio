@@ -1,4 +1,4 @@
-#how to get sub dir from git
+# how to get sub dir from git
 ### 1. make dir where you'll save files
 ### 2. init git
 ```
