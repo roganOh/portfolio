@@ -1,0 +1,50 @@
+snowflake:
+  target: dev 
+  outputs:
+    dev:
+      type: snowflake
+      account: 
+      # User/password auth
+      user: 
+      password: 
+      role: 
+      database: AIRFLOW_DATABASE
+      warehouse: QUERYPIE_WAREHOUSE
+      schema: TEST
+      threads: 1
+      client_session_keep_alive: False
+    prod:
+      type: snowflake
+      account:
+      # User/password auth
+      user: 
+      password: 
+      role: 
+      database: AIRFLOW_DATABASE
+      warehouse: QUERYPIE_WAREHOUSE
+      schema: TEST
+      threads: 1
+      client_session_keep_alive: False
+    test:
+      type: redshift
+      host: 
+      user: 
+      pass: 
+      port: 
+      dbname:
+      schema: test
+      threads: 4
+      keepalives_idle: 0
+redshift:
+  target: test 
+  outputs:
+    test:
+      type: redshift
+      host: 
+      user: 
+      pass: 
+      port:
+      dbname: 
+      schema: test
+      threads: 4
+      keepalives_idle: 0

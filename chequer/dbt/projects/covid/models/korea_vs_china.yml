@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: korea_vs_china 
+    columns:
+      - name: china_defcnt
+        tests:
+          - not_null:
+              severity: warn
+      - name: date 
+        tests:
+          - unique:
+              severity: warn
