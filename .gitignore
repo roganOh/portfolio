@@ -2,4 +2,6 @@
 .vscode
 *.bac
 *cache__
-
+target/
+dbt_modules/
+logs/
