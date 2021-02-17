@@ -9,6 +9,7 @@ type ValueNType []Element
 type StateOfEqn int
 type ElementType string
 type OperaterType int
+type ErrorMsg string
 
 type GroupParamsForGrouping struct {
 	i        int
@@ -17,13 +18,14 @@ type GroupParamsForGrouping struct {
 	inFix    []string
 	num      string
 	sequence int
+	msg      ErrorMsg
 }
 
 type GroupParamsForPostfixer struct {
-	operators ValueNType
+	operators    ValueNType
 	operatorsTop chan int
-	postFix ValueNType
-	postFixTop chan int
+	postFix      ValueNType
+	postFixTop   chan int
 }
 
 const (
@@ -48,37 +50,19 @@ const (
 const (
 	OnlyMinus     StateOfEqn = -1
 	Default       StateOfEqn = 0
-	SingleDigit   StateOfEqn = 1
-	Integer       StateOfEqn = 2
-	NumberWithDot StateOfEqn = 3
-	Decimal       StateOfEqn = 4
+	Integer       StateOfEqn = 1
+	NumberWithDot StateOfEqn = 2
+	Decimal       StateOfEqn = 3
 )
 
-func ErrorOtherComeAfterBelowMinus(eqn string, i int) {
-	ErrorWithWhere(eqn, "only number can come after minus", i)
-}
-func ErrorOtherComeAfterDot(eqn string, i int) {
-	ErrorWithWhere(eqn, "only number can come right after dot", i)
-}
-func ErrorOpenBraceComeAfterBelowMinus(eqn string, i int) {
-	ErrorWithWhere(eqn, "open brace can't come right after number", i)
-}
-func ErrorDotComeAfterBelowMinus(eqn string, i int) {
-	ErrorWithWhere(eqn, "dot can't come in decimal number", i)
-}
-func ErrorOpenBraceComeAfterInteger(eqn string, i int) {
-	ErrorWithWhere(eqn, "open brace can't come right after number", i)
-}
-func ErrorOpenBraceComeAfterSingleDigit(eqn string, i int) {
-	ErrorWithWhere(eqn, "open brace can't come right after number", i)
-}
-func ErrorBelowMinusComeAfterDigit(eqn string, i int) {
-	ErrorWithWhere(eqn, "minus can't come right after number", i)
-}
-func ErrorBraceComeAfterNone(eqn string, i int) {
-	ErrorWithWhere(eqn, "brace can't come after None", i)
-}
-func ErrorDotComeAfterNone(eqn string, i int) {
-	ErrorWithWhere(eqn, "dot can't come after number or operater", i)
-}
+const (
+	ErrorOtherComeAfterBelowMinus      ErrorMsg = "only number can come after minus"
+	ErrorOtherComeAfterDot             ErrorMsg = "only number can come right after dot"
+	ErrorOpenBraceComeAfterBelowMinus  ErrorMsg = "open brace can't come right after number"
+	ErrorDotComeAfterBelowMinus        ErrorMsg = "dot can't come in decimal number"
+	ErrorOpenBraceComeAfterInteger     ErrorMsg = "open brace can't come right after number"
+	ErrorBelowMinusComeAfterDigit      ErrorMsg = "minus can't come right after number"
+	ErrorBraceComeAfterNone            ErrorMsg = "brace can't come after None"
+	ErrorDotComeAfterNone              ErrorMsg = "dot can't come after number or operater"
+)
 

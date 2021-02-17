@@ -20,7 +20,7 @@ func popFromOperators(this GroupParamsForPostfixer) string {
 	return this.operators.Pop(this.operatorsTop).V
 }
 
-func popNPushUntilBraceMatch (nowElement string,this GroupParamsForPostfixer,stackMax int) {
+func popNPushUntilBraceMatch(nowElement string, this GroupParamsForPostfixer, stackMax int) {
 	var matchBrace string
 	switch nowElement {
 	case "]":
@@ -31,7 +31,7 @@ func popNPushUntilBraceMatch (nowElement string,this GroupParamsForPostfixer,sta
 		matchBrace = "("
 	}
 	for stackResult := popFromOperators(this); stackResult != matchBrace; stackResult = popFromOperators(this) {
-		ValueNType.Push(this.postFix,this.postFixTop,stackMax,stackResult)
+		ValueNType.Push(this.postFix, this.postFixTop, stackMax, stackResult)
 	}
 }
 
@@ -39,10 +39,10 @@ func (inFix ValueNType) InfixToPostfix() ValueNType {
 	var op OperaterType
 	stackMax := len(inFix)
 	this := GroupParamsForPostfixer{
-		operators : make(ValueNType, stackMax),
-		operatorsTop : make(chan int, 1),
-		postFix : make(ValueNType, stackMax),
-		postFixTop : make(chan int, 1),
+		operators:    make(ValueNType, stackMax),
+		operatorsTop: make(chan int, 1),
+		postFix:      make(ValueNType, stackMax),
+		postFixTop:   make(chan int, 1),
 	}
 	InitStack(this.operatorsTop)
 	InitStack(this.postFixTop)
@@ -52,11 +52,11 @@ func (inFix ValueNType) InfixToPostfix() ValueNType {
 		} else if inFix[i].T == openbrace {
 			ValueNType.Push(this.operators, this.operatorsTop, stackMax, inFix[i].V)
 		} else if inFix[i].T == closebrace {
-			popNPushUntilBraceMatch(inFix[i].V,this,stackMax)
+			popNPushUntilBraceMatch(inFix[i].V, this, stackMax)
 		} else {
 			for !this.operators.IsStackEmpty(this.operatorsTop) {
-				op=checkPriority(this.operators.Peek(this.operatorsTop).V)
-				if  op >= checkPriority(inFix[i].V) {
+				op = checkPriority(this.operators.Peek(this.operatorsTop).V)
+				if op >= checkPriority(inFix[i].V) {
 					this.postFix.Push(this.postFixTop, stackMax, ValueNType.Pop(this.operators, this.operatorsTop).V)
 				} else {
 					break

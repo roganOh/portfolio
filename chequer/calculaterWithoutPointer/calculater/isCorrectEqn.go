@@ -2,7 +2,7 @@ package calculater
 
 import "fmt"
 
-func ErrorWithWhere(eqn string,message string,i int) {
+func ErrorWithWhere(eqn string,message ErrorMsg,i int) {
 	var error string
 	println(message)
 	println("       "+eqn)
@@ -54,7 +54,6 @@ func isHaveCorrectBrace(eqn string) bool {
 			}
 		}
 	}
-
 	if topValue = <-braceTop; topValue != -1 {
 		return false
 	}

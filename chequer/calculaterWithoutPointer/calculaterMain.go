@@ -9,7 +9,7 @@ func main() {
 	var eqn string
 	var result string
 	var inFixList calculater.ValueNType
-	postFixList := make(calculater.ValueNType,len(eqn))
+	var postFixList calculater.ValueNType
 
 	calculater.GetCorrectEqn(&eqn)
 	inFixList = calculater.MakeStringToStructStackWithType(eqn,inFixList)

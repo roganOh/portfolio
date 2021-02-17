@@ -48,17 +48,18 @@ func oneDigitEnd(this GroupParamsForGrouping) GroupParamsForGrouping {
 	return this
 }
 
-func defaultCase(eqn string, this GroupParamsForGrouping) GroupParamsForGrouping {
+func defaultCase(this GroupParamsForGrouping) (bool, GroupParamsForGrouping) {
 	elementType := TypeDefine(this.ch)
 	switch elementType {
 	case number:
-		this.state = SingleDigit
+		this.state = Integer
 		this.num += this.ch
 	case below:
 		this.state = OnlyMinus
 		this.num += "-"
 	case dot:
-		ErrorDotComeAfterNone(eqn, this.i)
+		this.msg = ErrorDotComeAfterNone
+		return false, this
 	case operater:
 		this.inFix[this.sequence] = this.ch
 		this.sequence++
@@ -68,104 +69,98 @@ func defaultCase(eqn string, this GroupParamsForGrouping) GroupParamsForGrouping
 			this.inFix[this.sequence] = this.ch
 			this.sequence++
 		} else if this.sequence > 0 && IsTypeInTheseTypes(TypeDefine(this.inFix[this.sequence-1]), operater, openbrace) {
-			ErrorBraceComeAfterNone(eqn, this.i)
+			this.msg = ErrorBraceComeAfterNone
+			return false, this
 		} else {
 			this.inFix[this.sequence] = this.ch
 			this.sequence++
 		}
 
 	}
-	return this
+	return true, this
 
 }
 
-func singleDigitCase(eqn string, this GroupParamsForGrouping) GroupParamsForGrouping {
+func integerCase(this GroupParamsForGrouping) (bool, GroupParamsForGrouping) {
 	elementType := TypeDefine(this.ch)
 	switch elementType {
 	case number:
-		this.state = Integer
 		this.num += this.ch
 	case below:
-		ErrorBelowMinusComeAfterDigit(eqn, this.i)
+		this.msg = ErrorBelowMinusComeAfterDigit
+		return false, this
 	case operater, closebrace:
 		this = oneDigitEnd(this)
 	case openbrace:
-		ErrorOpenBraceComeAfterSingleDigit(eqn, this.i)
+		this.msg = ErrorOpenBraceComeAfterInteger
+		return false, this
 	case dot:
 		this.num += this.ch
 		this.state = NumberWithDot
 	}
-	return this
+	return true, this
 }
 
-func integerCase(eqn string, this GroupParamsForGrouping) GroupParamsForGrouping {
+func decimalCase(this GroupParamsForGrouping) (bool, GroupParamsForGrouping) {
 	elementType := TypeDefine(this.ch)
 	switch elementType {
 	case number:
 		this.num += this.ch
 	case below:
-		ErrorBelowMinusComeAfterDigit(eqn, this.i)
+		this.msg = ErrorBelowMinusComeAfterDigit
+		return false, this
 	case operater, closebrace:
 		this = oneDigitEnd(this)
 	case openbrace:
-		ErrorOpenBraceComeAfterInteger(eqn, this.i)
+		this.msg = ErrorOpenBraceComeAfterBelowMinus
+		return false, this
 	case dot:
-		this.num += this.ch
-		this.state = NumberWithDot
+		this.msg = ErrorDotComeAfterBelowMinus
+		return false, this
 	}
-	return this
-}
-
-func decimalCase(eqn string, this GroupParamsForGrouping) GroupParamsForGrouping {
-	elementType := TypeDefine(this.ch)
-	switch elementType {
-	case number:
-		this.num += this.ch
-	case below:
-		ErrorBelowMinusComeAfterDigit(eqn, this.i)
-	case operater, closebrace:
-		this = oneDigitEnd(this)
-	case openbrace:
-		ErrorOpenBraceComeAfterBelowMinus(eqn, this.i)
-	case dot:
-		ErrorDotComeAfterBelowMinus(eqn, this.i)
-	}
-	return this
+	return true, this
 }
 
 func groupingNumbers(eqn string) []string {
 	this := GroupParamsForGrouping{inFix: make([]string, len(eqn))}
 	var v int32
+	var noErr bool = true
 	for this.i, v = range eqn {
 		this.ch = string(v)
+
 		switch this.state {
 		case OnlyMinus:
 			if TypeDefine(this.ch) == number {
-				this.state = SingleDigit
+				this.state = Integer
 				this.num += this.ch
 			} else {
-				ErrorOtherComeAfterBelowMinus(eqn, this.i)
+				this.msg = ErrorOtherComeAfterBelowMinus
+				noErr = false
 			}
 		case Default:
-			this = defaultCase(eqn, this)
-		case SingleDigit:
-			this = singleDigitCase(eqn, this)
+			noErr, this = defaultCase(this)
 		case Integer:
-			this = integerCase(eqn, this)
+			noErr, this = integerCase(this)
 		case NumberWithDot:
 			if TypeDefine(this.ch) == number {
 				this.num += this.ch
 				this.state = Decimal
 			} else {
-				ErrorOtherComeAfterDot(eqn, this.i)
+				this.msg = ErrorOtherComeAfterDot
+				noErr = true
 			}
 		case Decimal:
-			this = decimalCase(eqn, this)
+			noErr, this = decimalCase(this)
+		}
+		if !noErr {
+			//if have error
+			ErrorWithWhere(eqn, this.msg, this.i)
+		}
+		if this.num != "" {
+			this.inFix[this.sequence] = this.num
 		}
 	}
-	if this.num != "" {
-		this.inFix[this.sequence] = this.num
-	}
+
 	return this.inFix
 }
 
