@@ -10,9 +10,9 @@ func main() {
 	var postFixList calculater.ValueNType
 	inFixList := calculater.GetCorrectInFixList()
 	fmt.Println(inFixList)
-	postFixList = calculater.ValueNType.InfixToPostfix(inFixList)
+	postFixList = inFixList.InfixToPostfix()
 	fmt.Println(postFixList)
-	result = calculater.ValueNType.Calculate(postFixList)
+	//result = calculater.ValueNType.Calculate(postFixList) also can be like under code
+	result = postFixList.Calculate()
 	println(result)
 }
-

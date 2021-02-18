@@ -2,7 +2,7 @@ package calculater
 
 import "fmt"
 
-func ErrorWithWhere(eqn string,message ErrorMsg,i int) {
+func ErrorWithWhere(eqn string, message ErrorMsg, i int) {
 	var error string
 	println(message)
 	//println("       "+eqn)
@@ -39,21 +39,25 @@ func isHaveCorrectBrace(eqn string) bool {
 				return false
 			}
 			braceTop <- topValue
-			matchBrace := ValueNType.Pop(stack, braceTop).V
-			switch ch {
-			case ")":
-				if matchBrace != "(" {
-					return false
+
+			nowBrace := ValueNType.Pop(stack, braceTop).V
+			matchBrace := func() string {
+				switch ch{
+				case ")":
+					return "("
+				case "}":
+					return "{"
+				case "]":
+					return "["
+				default:
+					return ""
 				}
-			case "}":
-				if matchBrace != "{" {
-					return false
-				}
-			case "]":
-				if matchBrace != "[" {
-					return false
-				}
+			}()
+			if nowBrace != matchBrace{
+				return false
 			}
+		} else {
+			continue
 		}
 	}
 	if topValue = <-braceTop; topValue != -1 {
@@ -85,7 +89,7 @@ func GetCorrectEqn(eqn *string) {
 	if *eqn == "" {
 		fmt.Scan(eqn)
 	}
-	for !isCorrectEqn(*eqn){
+	for !isCorrectEqn(*eqn) {
 		println("wrong equation please write again")
 		fmt.Scan(eqn)
 	}

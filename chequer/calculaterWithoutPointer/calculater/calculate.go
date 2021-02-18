@@ -5,8 +5,6 @@ import "strconv"
 func (postFix ValueNType) Calculate() string {
 	stackMax := len(postFix)
 	var nowNum, postNum float64
-	postFixTop := make(chan int, 1)
-	postFixTop <- stackMax - 1
 	result := make(ValueNType, stackMax)
 	resultTop := make(chan int, 1)
 	InitStack(resultTop)

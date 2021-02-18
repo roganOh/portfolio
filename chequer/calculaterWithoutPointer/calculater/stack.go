@@ -4,8 +4,10 @@ func Error(str string) {
 	panic(str)
 }
 
-func InitStack(top chan<- int) {
-	top <- -1
+func InitStack(top ...chan<- int) {
+	for _,c := range top {
+		c <- -1
+	}
 }
 
 func (data ValueNType) IsStackEmpty(top chan int) bool {

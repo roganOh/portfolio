@@ -21,6 +21,7 @@ type GroupParamsForGrouping struct {
 }
 
 type GroupParamsForPostfixer struct {
+	op           OperaterType
 	operators    ValueNType
 	operatorsTop chan int
 	postFix      ValueNType

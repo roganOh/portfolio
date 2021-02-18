@@ -31,12 +31,26 @@ func popNPushUntilBraceMatch(nowElement string, this GroupParamsForPostfixer, st
 		matchBrace = "("
 	}
 	for stackResult := popFromOperators(this); stackResult != matchBrace; stackResult = popFromOperators(this) {
+		//init stackResult and while stackResult != matchBrace, run for func and also do assign value in stackResult
 		ValueNType.Push(this.postFix, this.postFixTop, stackMax, stackResult)
 	}
 }
 
+func pushOperators(e Element,this GroupParamsForPostfixer,stackMax int) GroupParamsForPostfixer {
+	for !this.operators.IsStackEmpty(this.operatorsTop) {
+		this.op = checkPriority(this.operators.Peek(this.operatorsTop).V)
+		if this.op >= checkPriority(e.V) {
+			this.postFix.Push(this.postFixTop, stackMax, ValueNType.Pop(this.operators, this.operatorsTop).V)
+		} else {
+			break
+		}
+	}
+
+	ValueNType.Push(this.operators, this.operatorsTop, stackMax, e.V)
+	return this
+}
+
 func (inFix ValueNType) InfixToPostfix() ValueNType {
-	var op OperaterType
 	stackMax := len(inFix)
 	this := GroupParamsForPostfixer{
 		operators:    make(ValueNType, stackMax),
@@ -44,9 +58,9 @@ func (inFix ValueNType) InfixToPostfix() ValueNType {
 		postFix:      make(ValueNType, stackMax),
 		postFixTop:   make(chan int, 1),
 	}
-	InitStack(this.operatorsTop)
-	InitStack(this.postFixTop)
+	InitStack(this.operatorsTop,this.postFixTop)
 	for i := 0; i < stackMax; i++ {
+
 		if inFix[i].T == number {
 			ValueNType.Push(this.postFix, this.postFixTop, stackMax, inFix[i].V)
 		} else if inFix[i].T == openbrace {
@@ -54,16 +68,9 @@ func (inFix ValueNType) InfixToPostfix() ValueNType {
 		} else if inFix[i].T == closebrace {
 			popNPushUntilBraceMatch(inFix[i].V, this, stackMax)
 		} else {
-			for !this.operators.IsStackEmpty(this.operatorsTop) {
-				op = checkPriority(this.operators.Peek(this.operatorsTop).V)
-				if op >= checkPriority(inFix[i].V) {
-					this.postFix.Push(this.postFixTop, stackMax, ValueNType.Pop(this.operators, this.operatorsTop).V)
-				} else {
-					break
-				}
-			}
-			ValueNType.Push(this.operators, this.operatorsTop, stackMax, inFix[i].V)
+			this = pushOperators(inFix[i],this,stackMax)
 		}
+
 	}
 	for !this.operators.IsStackEmpty(this.operatorsTop) {
 		if ValueNType.Peek(this.operators, this.operatorsTop).V == "" {

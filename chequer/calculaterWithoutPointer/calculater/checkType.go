@@ -61,9 +61,10 @@ func defaultCase(this GroupParamsForGrouping) (bool, GroupParamsForGrouping) {
 	case operater:
 		this.inFix = append(this.inFix, Element{this.ch, TypeDefine(this.ch)})
 	case openbrace:
-		if len(this.inFix) ==0 {
+		if len(this.inFix) == 0 {
+			//for example ( for (3+1)
 			this.inFix = append(this.inFix, Element{this.ch, TypeDefine(this.ch)})
-		} else if IsTypeInTheseTypes(this.inFix[len(this.inFix)-1].T, operater, openbrace) {
+		} else if IsTypeInTheseTypes(this.inFix[len(this.inFix)-1].T, operater, openbrace) { //len(this.inFix) != 0
 			this.inFix = append(this.inFix, Element{this.ch, TypeDefine(this.ch)})
 		} else {
 			this.msg = ErrorBraceLocateIsWrong
@@ -122,7 +123,7 @@ func decimalCase(this GroupParamsForGrouping) (bool, GroupParamsForGrouping) {
 	return true, this
 }
 
-func MakeInFixWithMappingType(eqn string, inFixList ValueNType) (bool,ValueNType) {
+func MakeInFixWithMappingType(eqn string, inFixList ValueNType) (bool, ValueNType) {
 	this := GroupParamsForGrouping{inFix: inFixList}
 	var v int32
 	var noErr bool = true
@@ -155,11 +156,12 @@ func MakeInFixWithMappingType(eqn string, inFixList ValueNType) (bool,ValueNType
 		if !noErr {
 			//if have error
 			ErrorWithWhere(eqn, this.msg, this.i)
-			return false,this.inFix
+			return false, this.inFix
 		}
 
 	}
 	if this.num != "" {
+		//for example, 3 for 1+3
 		this.inFix = append(this.inFix, Element{this.num, TypeDefine(this.num)})
 	}
 
