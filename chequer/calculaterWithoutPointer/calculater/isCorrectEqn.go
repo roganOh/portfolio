@@ -67,8 +67,18 @@ func isLastNumOrBrace(eqn string) bool {
 	return TypeDefine(lastChar) == number || TypeDefine(lastChar) == closebrace
 }
 
+func isNotEmpty(eqn string) bool {
+	for _, v := range eqn {
+		ch := string(v)
+		if IsDigit(ch) {
+			return true
+		}
+	}
+	return false
+}
+
 func isCorrectEqn(eqn string) bool {
-	return isNotHaveTypo(eqn) && isHaveCorrectBrace(eqn) && isLastNumOrBrace(eqn)
+	return isNotHaveTypo(eqn) && isHaveCorrectBrace(eqn) && isLastNumOrBrace(eqn) && isNotEmpty(eqn)
 }
 
 func GetCorrectEqn(eqn *string) {
@@ -80,4 +90,3 @@ func GetCorrectEqn(eqn *string) {
 		fmt.Scan(eqn)
 	}
 }
-
