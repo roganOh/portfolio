@@ -26,7 +26,7 @@
 
 
 ### 1. airflow를 설치한다
-[install airflow](https://github.com/roganOh/portfolio/blob/master/chequer/querypie_el/install_airflow_11014_in_ec2.md)
+[install airflow 1.10.14](https://github.com/roganOh/portfolio/blob/master/chequer/querypie_el/install_airflow_11014_in_ec2.md)
 ### 2.airflow의 메타데이터가 저장될 위치를 정한다
 ```
 cd 
