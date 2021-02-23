@@ -90,7 +90,7 @@ func GetCorrectEqn(eqn *string) {
 		fmt.Scan(eqn)
 	}
 	for !isCorrectEqn(*eqn) {
-		println("wrong equation please write again")
+		println("wrong equation")
 		fmt.Scan(eqn)
 	}
 }
