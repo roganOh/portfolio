@@ -12,7 +12,8 @@ func main() {
 	fmt.Println(inFixList)
 	postFixList = inFixList.InfixToPostfix()
 	fmt.Println(postFixList)
-	//result = calculater.ValueNType.Calculate(postFixList) also can be like under code
 	result = postFixList.Calculate()
 	println(result)
+
 }
+

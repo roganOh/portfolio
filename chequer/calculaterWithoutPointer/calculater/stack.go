@@ -47,3 +47,4 @@ func (data ValueNType) Peek(top chan int) Element {
 	top <- topValue
 	return data[topValue]
 }
+
