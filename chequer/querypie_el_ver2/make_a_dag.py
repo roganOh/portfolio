@@ -10,7 +10,7 @@ Available functions:
 """
 import subprocess
 
-import get_sql_alchemy_conn
+from get_information_from_user import get_sql_alchemy_conn
 
 # find ~ first
 a = subprocess.check_output("echo $HOME", shell=True, )

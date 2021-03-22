@@ -25,7 +25,7 @@ import subprocess
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-import get_sql_alchemy_conn
+from get_information_from_user import get_sql_alchemy_conn
 
 # cause I made install airflow at ~ , airlfow home may be ~/airflow
 a=subprocess.check_output("echo $HOME",shell=True,)
