@@ -1,7 +1,7 @@
 import pandas as pd
 
-from get_information_from_user.messages import *
-from get_information_from_user.struct_N_const import db, db_info
+from get_information_from_user.const_value import *
+from get_information_from_user.structs import db_info
 
 
 def get_db_info(dag, type):
@@ -18,7 +18,7 @@ def get_db_type():
     while True:
         db_type = input("db_type : ")
         if is_in_db_range(db_type): break
-        error_message.unuseable_db_type()
+        print(error_message.unuseable_db_type)
         print(about_querypie_elt.about_db_type)
     return db_type
 
@@ -35,13 +35,13 @@ def db_flag_maker(db_type):
 
 
 def mysql_raw_code_maker(db_url_component, dag, type):
-    raw_data = {'dag_id': [db_url_component.dag_id],
+    raw_data = {'dag_id': [dag.dag_id],
                 'owner': [dag.owner],
                 'directory': [dag.csv_files_directory],
                 'start_date': [dag.start_date],
                 'catchup': [dag.catchup],
                 'schedule_interval': [dag.schedule_interval],
-                'db_type': [db_url_component.integrate_db_type],
+                'db_type': [db_url_component.db_type],
                 'db_information': [
                     """{{'id': '{id}', 'pwd': '{pwd}', 'host': '{host}', 'port': '{port}' 'option': '{option}'}}
                     """.format(id=db_url_component.id, pwd=db_url_component.pwd, host=db_url_component.host,
@@ -51,13 +51,13 @@ def mysql_raw_code_maker(db_url_component, dag, type):
 
 
 def snowflake_raw_code_maker(db_url_component, dag, type):
-    raw_data = {'dag_id': [db_url_component.dag_id],
+    raw_data = {'dag_id': [dag.dag_id],
                 'owner': [dag.owner],
                 'directory': [dag.csv_files_directory],
                 'start_date': [dag.start_date],
                 'catchup': [dag.catchup],
                 'schedule_interval': [dag.schedule_interval],
-                'db_type': [db_url_component.integrate_db_type],
+                'db_type': [db_url_component.db_type],
                 'db_information': [
                     """{{'id': '{id}', 'pwd': '{pwd}', 'account': '{account}', 'warehouse': '{warehouse}', 'role': '{role}'}}
                     """.format(id=db_url_component.id, pwd=db_url_component.pwd, account=db_url_component.account,
@@ -67,13 +67,13 @@ def snowflake_raw_code_maker(db_url_component, dag, type):
 
 
 def amazon_raw_code_maker(db_url_component, dag, type):
-    raw_data = {'dag_id': [db_url_component.dag_id],
+    raw_data = {'dag_id': [dag.dag_id],
                 'owner': [dag.owner],
                 'directory': [dag.csv_files_directory],
                 'start_date': [dag.start_date],
                 'catchup': [dag.catchup],
                 'schedule_interval': [dag.schedule_interval],
-                'db_type': [db_url_component.integrate_db_type],
+                'db_type': [db_url_component.db_type],
                 'db_information': [
                     """{{'id': '{id}', 'pwd': '{pwd}', 'host': '{host}', 'port': '{port}',  'option': '{option}' }}
                     """.format(id=db_url_component.id, pwd=db_url_component.pwd, host=db_url_component.host,
@@ -117,7 +117,7 @@ def get_mysql_info():
         mysql.host = input('host : ')
         mysql.port = input('port : ')
         if not mysql.host or not mysql.port:
-            error_message.write_everything()
+            print(error_message.write_everything)
             continue
         mysql.id, mysql.pwd = get_auth()
         break
@@ -130,7 +130,7 @@ def get_snowflake_info():
         snowflake = db_info()
         snowflake.account = input('account(host except snowflakecomputing.com) : ')
         if not snowflake.account:
-            error_message.write_everything()
+            print(error_message.write_everything)
             continue
         snowflake.id, snowflake.pwd = get_auth()
         snowflake.warehouse = input('warehouse : ')
@@ -145,7 +145,7 @@ def get_amazon_info():
         amazon.host = input('host : ')
         amazon.port = input('port : ')
         if not amazon.host or not amazon.port:
-            error_message.write_everything()
+            print(error_message.write_everything)
             continue
         amazon.id, amazon.pwd = get_auth()
 
@@ -156,10 +156,10 @@ def get_id():
     while True:
         id = input('db login id : ')
         if ' ' in id:
-            error_message.about_pep8()
+            print(error_message.about_pep8)
             continue
         if not id:
-            error_message.no_value(id)
+            error_no_value('id')
             continue
         break
     return id
@@ -169,10 +169,10 @@ def get_pwd():
     while True:
         pwd = input('db login pwd : ')
         if ' ' in pwd:
-            error_message.about_pep8()
+            print(error_message.about_pep8)
             continue
         if not pwd:
-            error_message.no_value(pwd)
+            error_no_value('pwd')
             continue
         break
     return pwd

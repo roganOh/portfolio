@@ -1,7 +1,7 @@
 import pandas as pd
 
-from get_information_from_user.messages import *
-from get_information_from_user.struct_N_const import db, user_data_carrier
+from get_information_from_user.const_value import *
+from get_information_from_user.structs import user_data_carrier
 
 
 def create_integrate_carrier(db_type, dag_id):
@@ -41,7 +41,7 @@ def get_correct_upsert_rule(tables):
         upsert_rule = input("rule : ").replace(" ", "").split(',')
         if len(tables) == len(upsert_rule):
             break
-        error_message.len_of_rules_are_not_correct_with_len_of_tables()
+        print(error_message.len_of_rules_are_not_correct_with_len_of_tables)
     upsert_rule_correcter(upsert_rule)
     return upsert_rule
 
@@ -49,7 +49,7 @@ def get_correct_upsert_rule(tables):
 def upsert_rule_correcter(upsert_rule):
     for i in range(len(upsert_rule)):
         while not is_in_upsert_rule_range(upsert_rule[i]):
-            error_message.wrong_upsert_rule()
+            print(error_message.wrong_upsert_rule)
             print('error rule : ' + upsert_rule[i])
             upsert_rule[i] = input("rule : ")
 
@@ -59,27 +59,30 @@ def is_in_upsert_rule_range(thing):
 
 
 def get_tables(db_type):
+    integrate_carrier = get_database_schema(db_type)
     while True:
         tables = input("tables : ").split(',')  # table 이름 중간에 , 가 들어간다면??
-        if tables:
-            break
-        error_message.no_table()
-        integrate_carrier = get_database_schema(db_type)
         if len(integrate_carrier.database) != len(tables):
-            error_message.len_of_tables_and_len_of_database_are_not_correct()
+            print(error_message.len_of_tables_and_len_of_database_are_not_correct)
             continue
+        else:
+            break
+        print(error_message.no_table)
+
     integrate_carrier.tables = tables
     integrate_carrier.pk, integrate_carrier.updated = init_pk_and_updated(tables)
     return integrate_carrier
 
 
-def get_database_schema_mysql():
+def get_database_have_no_schema():
+    database = []
     while not database:
         database = input('database : ').split(',')
     return database
 
 
-def get_database_schema_snowflake():
+def get_database_have_schema():
+    database = []
     while not database:
         database = input('database : ').split(',')
     while True:
@@ -89,29 +92,17 @@ def get_database_schema_snowflake():
     return database, schema
 
 
-def get_database_schema_amazon():
-    while not database:
-        database = input('database : ').split(',')
-    while True:
-        schema = input('schema : ').split(',')
-        if len(database) == len(schema):
-            break
-    return database, schema
-
-
 def get_database_schema(db_type):
     integrate_carrier = user_data_carrier()
     if db_type == db.mysql:
-        integrate_carrier = get_database_schema_mysql()
-    elif db_type == db.snowflake:
-        integrate_carrier = get_database_schema_snowflake()
-    elif db_type in (db.redshift, db.postgresql):
-        integrate_carrier = get_database_schema_amazon()
+        integrate_carrier.database = get_database_have_no_schema()
+    elif db_type in (db.snowflake, db.redshift, db.postgresql):
+        integrate_carrier.database, integrate_carrier.schema = get_database_have_schema()
     return integrate_carrier
 
 
 def set_columns_as_all(tables):
-    return ['*'] * len(tables)
+    return str(['*'] * len(tables))
 
 
 def columns_is_not_list(columns):
@@ -127,8 +118,10 @@ def get_columns(tables):
         if not (columns):
             columns = set_columns_as_all(tables)
             break
-        if (columns_is_not_list(columns)):
-            error_message.columns_type_is_not_list()
+        if len(columns) == len(tables):
+            break
+        if columns_is_not_list(columns):
+            print(error_message.columns_type_is_not_list)
             continue
     return columns
 
@@ -164,7 +157,7 @@ def get_pk(tables, upsert_rule, pk, i, column_type):
     print('table: ' + tables[i] + ', rule : ' + upsert_rule[i])
     pk[i] = input(column_type + " column : ")
     while not (pk[i]):
-        error_message.no_pk()
+        print(error_message.no_pk)
         pk[i] = input(column_type + ' column : ')
 
 
@@ -172,7 +165,7 @@ def get_updated(tables, upsert_rule, updated_at, i, column_type):
     print('table: ' + tables[i] + ', rule : ' + upsert_rule[i])
     updated_at[i] = input(column_type + " column : ")
     while not (updated_at[i]):
-        error_message.no_updated_at()
+        print(error_message.no_updated_at)
         updated_at[i] = input(column_type + ' column : ')
 
 

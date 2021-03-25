@@ -5,8 +5,8 @@ import pandas as pd
 import sqlalchemy as sql
 
 from get_information_from_user import get_sql_alchemy_conn
-from get_information_from_user.messages import *
-from get_information_from_user.struct_N_const import dag_info
+from get_information_from_user.const_value import *
+from get_information_from_user.structs import dag_info
 
 
 def print_programe_start_comment():
@@ -15,10 +15,10 @@ def print_programe_start_comment():
 
 
 def get_dag_info():
+    print_programe_start_comment()
     dag = dag_info()
     dag.airflow_home, dag.backend_url = get_airflow_home_and_backend_url()
     engine = sql.create_engine(dag.backend_url)
-    print_programe_start_comment()
     dag.dag_id = get_dag_id_for_python(engine)
     dag.owner = get_owner()
     # make datetime of yesterday's date
@@ -52,7 +52,7 @@ def get_dag_id_for_python(engine):
         dag_id, useable = get_dag_id(engine)
         if useable:
             break
-        error_message.unuseable_dag_id()
+        print(error_message.unuseable_dag_id)
     return dag_id
 
 
@@ -97,7 +97,7 @@ def is_job_exists(job_name, engine):
         """ job must not exsist so this direction is correct direction. And so, when in this case, code does nothing."""
         return False
     else:  # job is exist
-        error_message.dag_id_exists(job_name)
+        error_dag_id_exists(job_name)
         return True
 
 

@@ -24,7 +24,7 @@ import sqlalchemy as sql
 
 from get_information_from_user.get_dag import get_dag_info
 from get_information_from_user.get_db_info import get_db_info
-from make_a_dag import make_a_dag
+from get_information_from_user.make_a_dag import make_a_dag
 from get_information_from_user.manage_users_tables import make_tables_to_replicate, metadata_to_sql
 
 dag = get_dag_info()
