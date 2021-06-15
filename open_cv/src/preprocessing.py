@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from color import Color
+from src.color import Color
 
 def resize(img):
     img = cv2.resize(img, (512, 512))

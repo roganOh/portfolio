@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 
-import preprocessing
-from color import Color
-from rock_scissor_paper import Hand_shape as hs
+import src.preprocessing as preprocessing
+from src.color import Color
+from src.rock_scissor_paper import Hand_shape as hs
 
 
 def draw_contours(img, contours):

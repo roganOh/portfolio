@@ -1,7 +1,7 @@
 import cv2
 
-import src.hand_shape
-import src.preprocessing
+import src.hand_shape as hand_shape
+import src.preprocessing as preprocessing
 from src.color import Color
 from src.rock_scissor_paper import Hand_shape as hs
 from src.win import Win
