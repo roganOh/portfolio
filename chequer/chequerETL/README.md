@@ -1,5 +1,3 @@
-<img width="1953" alt="airpie-wordmark" src="https://user-images.githubusercontent.com/66454919/126868247-47c955c6-17c4-4215-838a-c70dbf41b503.png">
-
 # [AIRFLOW]
 ## airflow란?
 
