@@ -29,7 +29,7 @@ after commit, push to git
 befor commit, files and dirs are not in git
 ```
 ## .gitignore
-####.gititgnore must locate at root dir
+#### gititgnore must locate at root dir
 ```
 # : comments
 
