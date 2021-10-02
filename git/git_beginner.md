@@ -60,4 +60,4 @@ delete from local and git
 delete from only in remote
 ```
 
-
+ssh
